@@ -7,8 +7,10 @@
 //
 
 #import "ViewController.h"
+#import "LoadingButton.h"
 
 @interface ViewController ()
+@property (strong, nonatomic) LoadingButton  *button;
 
 @end
 
@@ -16,8 +18,24 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
+    
+    self.button = [[LoadingButton alloc] initWithFrame:(CGRectMake(50, 200, 200, 50))];
+    [self.view addSubview:self.button];
+    self.button.backgroundColor = [UIColor blueColor];
+    [self.button setTitle:@"登录" forState:(UIControlStateNormal)];
+    [self.button addTarget:self action:@selector(click) forControlEvents:(UIControlEventTouchUpInside)];
+    
 }
 
+- (void)click {
+    
+    if (self.button.animating) {
+        [self.button stopAnimate];
+    } else {
+        [self.button beginAnimate];
+
+    }
+    
+}
 
 @end

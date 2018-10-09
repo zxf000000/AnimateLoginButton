@@ -22,7 +22,7 @@
         [self.layer addSublayer:_animateLayer];
         
         _insideAnimateLayer = [[CAShapeLayer alloc] init];
-        UIBezierPath *inPath = [UIBezierPath bezierPathWithArcCenter:CGPointMake(frame.size.width / 2, frame.size.height/2) radius:self.frame.size.height / 2 - 12 startAngle:M_PI/2 endAngle:M_PI * 2 clockwise:YES];
+        UIBezierPath *inPath = [UIBezierPath bezierPathWithArcCenter:CGPointMake(frame.size.width / 2, frame.size.height/2) radius:self.frame.size.height / 2 - 14 startAngle:M_PI/2 endAngle:M_PI * 2 clockwise:YES];
         _insideAnimateLayer.path = inPath.CGPath;
         _insideAnimateLayer.lineWidth = 3;
         _insideAnimateLayer.strokeColor = [UIColor whiteColor].CGColor;
@@ -120,7 +120,6 @@
     self.enabled = NO;
     CGFloat radius = self.frame.size.height / 2;
     if (self.heightOffset  >= (self.frame.size.height - 20)/2) {
-        self.widthOffset += (self.frame.size.width - 20) / 2 / 15.0;
         if (self.widthOffset >= self.frame.size.width / 2 - self.frame.size.height / 2) {
             
             // 开始转圈
@@ -128,13 +127,46 @@
             _animateLayer.hidden = NO;
             _insideAnimateLayer.hidden = NO;
             self.enabled = YES;
+
+            CAAnimationGroup *group = [[CAAnimationGroup alloc] init];
+            
+            CAKeyframeAnimation *keyAnima = [CAKeyframeAnimation animationWithKeyPath:@"strokeEnd"];
+            keyAnima.values = @[@(0),@(1),@(0)];
+            keyAnima.keyTimes = @[@(0),@(0.5),@(1)];
+            keyAnima.duration = 2;
+            keyAnima.removedOnCompletion = NO;
+            keyAnima.fillMode = kCAFillModeForwards;
+//            CABasicAnimation *growAnima = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
+//            growAnima.fromValue = @(0.1);
+//            growAnima.toValue = @(1.0);
+            
+            
+            
+//            CABasicAnimation *shrinkAnima = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
+//            growAnima.fromValue = @(1.0);
+//            growAnima.toValue = @(0.1);
+            
+            CAKeyframeAnimation *keyAnima1 = [CAKeyframeAnimation animationWithKeyPath:@"transform.rotation.z"];
+            keyAnima1.values = @[@(0),@(M_PI * 2),@(M_PI * 4)];
+            keyAnima1.keyTimes = @[@(0),@(0.5),@(1)];
+            keyAnima1.duration = 2;
+            keyAnima1.removedOnCompletion = NO;
+            keyAnima1.fillMode = kCAFillModeForwards;
+            
             self.outAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
             self.outAnimation .toValue = @(M_PI  * 2);
             self.outAnimation .fillMode = kCAFillModeForwards;
             self.outAnimation .removedOnCompletion = NO;
-            self.outAnimation .duration = 0.8;
-            self.outAnimation .repeatCount = 100;
-            [self.animateLayer addAnimation:self.outAnimation  forKey:nil];
+            self.outAnimation .duration = 2;
+//            self.outAnimation .repeatCount = 100;
+            
+            group.animations = @[keyAnima, keyAnima1];
+            group.removedOnCompletion = NO;
+            group.fillMode = kCAFillModeForwards;
+            group.duration = 2;
+            group.repeatCount = 100;
+            
+            [self.animateLayer addAnimation:group  forKey:nil];
             
             self.inAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
             self.inAnimation .toValue = @(-M_PI  * 2);
@@ -145,6 +177,10 @@
             [self.insideAnimateLayer addAnimation:self.inAnimation  forKey:nil];
 
             return;
+        }
+        self.widthOffset += (self.frame.size.width - 20) / 2 / 10.0;
+        if (self.widthOffset >= self.frame.size.width / 2 - self.frame.size.height / 2) {
+            self.widthOffset = self.frame.size.width / 2 - self.frame.size.height / 2;
         }
         
         UIBezierPath *maskPath = [UIBezierPath bezierPath];
@@ -158,7 +194,9 @@
         
     } else {
         self.heightOffset += (self.frame.size.height - 20) / 2 / 5.0;
-
+        if (self.heightOffset >= (self.frame.size.height - 20) / 2 ) {
+            self.heightOffset = (self.frame.size.height - 20) / 2;
+        }
         UIBezierPath *maskPath = [UIBezierPath bezierPath];
         [maskPath moveToPoint:(CGPointMake(0, 10 + self.heightOffset))];
         [maskPath addArcWithCenter:(CGPointMake(10 + self.heightOffset, 10+ self.heightOffset)) radius:10+ self.heightOffset startAngle:M_PI endAngle:M_PI * 3 / 2 clockwise:YES];

@@ -19,6 +19,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    // 初始化button
     self.button = [[LoadingButton alloc] initWithFrame:(CGRectMake(50, 200, 200, 50))];
     [self.view addSubview:self.button];
     self.button.backgroundColor = [UIColor blueColor];
